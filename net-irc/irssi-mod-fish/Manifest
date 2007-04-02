@@ -1,0 +1,8 @@
+DIST FiSH-irssi.v0.99-source.zip 43491 RMD160 d4a042a0ca28dfe2839f13a46a18d009df769bce SHA1 4af337be9b985f134c0e84bb652aad63e28c46be SHA256 fe5ec748886620494c51e568093ff226b663a3a7ee7716ab06c24e29bf828e3c
+EBUILD irssi-mod-fish-0.99.ebuild 4891 RMD160 03b9d61e4f4ecec2bdd11d8d8f5d5416e9a7e570 SHA1 f2d6ef4afc1f453ef07875b8bff1e6348fd9d09d SHA256 8c0e384dc591aea1cf8ad6066ecd9ac017424651dfb439287a764ab083d34379
+MD5 5166eef16cb4fa3ecdcac97daaaaceb4 irssi-mod-fish-0.99.ebuild 4891
+RMD160 03b9d61e4f4ecec2bdd11d8d8f5d5416e9a7e570 irssi-mod-fish-0.99.ebuild 4891
+SHA256 8c0e384dc591aea1cf8ad6066ecd9ac017424651dfb439287a764ab083d34379 irssi-mod-fish-0.99.ebuild 4891
+MD5 3f15b40ef74e5c27641d8187d1f2c6aa files/digest-irssi-mod-fish-0.99 259
+RMD160 a8b51176634b083993c7fb0d8dc6475f263cf45e files/digest-irssi-mod-fish-0.99 259
+SHA256 ac11113d485f28d6e8f7513e6d6ddc0cd02c32a7d3917035f714f2109bdfa2a1 files/digest-irssi-mod-fish-0.99 259
