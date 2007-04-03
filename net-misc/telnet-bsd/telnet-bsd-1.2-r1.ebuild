@@ -17,7 +17,7 @@ IUSE="nls wraith"
 
 RDEPEND="sys-libs/ncurses"
 DEPEND="${RDEPEND}
-        wraith? ( dev-libs/openssl )
+	wraith? ( dev-libs/openssl )
 	!net-misc/netkit-telnetd"
 
 src_unpack() {

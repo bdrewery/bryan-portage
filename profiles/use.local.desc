@@ -7,4 +7,5 @@
 
 # Keep it sorted.
 
-mail-mta/netqmail:virusscan - add support for scanning emails for known virus signatures
+mail-mta/netqmail:virusscan - Add support for scanning emails for known virus signatures
+net-misc/telnet-bsd:wraith - Add support for Auth protocol version 1
