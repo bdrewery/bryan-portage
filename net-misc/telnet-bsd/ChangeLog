@@ -3,6 +3,9 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/telnet-bsd/ChangeLog,v 1.37 2007/01/07 18:33:56 antarus Exp $
 
   04 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Fix spacing issue with usage
+
+  04 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Fix -w not being processed
   Fix help output being in wrong place
 
