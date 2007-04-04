@@ -25,7 +25,7 @@ src_unpack() {
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-fbsd.patch
 	if use wraith; then
-		epatch "${FILESDIR}"/${P}-wraith.patch
+		epatch "${FILESDIR}"/${P}-wraith.patch || die
 	fi
 
 	eautoreconf
