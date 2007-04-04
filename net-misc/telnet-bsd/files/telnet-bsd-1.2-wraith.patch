@@ -1,0 +1,321 @@
+diff -burN telnet-bsd-1.2.orig/telnet/Makefile.am telnet-bsd-1.2/telnet/Makefile.am
+--- telnet-bsd-1.2.orig/telnet/Makefile.am	2007-04-02 23:42:02.000000000 -0700
++++ telnet-bsd-1.2/telnet/Makefile.am	2007-04-03 13:34:12.000000000 -0700
+@@ -7,7 +7,7 @@
+ 
+ AM_CFLAGS = @EXTRA_CFLAGS@ -DENV_HACK -DUSE_TERMIO -DKLUDGELINEMODE -D_GNU_SOURCE @PIE_CFLAGS@
+ DEFS = @DEFS@ -DLOCALEDIR=\"$(localedir)\"
+-LDADD = @PIE_LDFLAGS@ -lncurses
++LDADD = @PIE_LDFLAGS@ -lncurses -lssl
+ INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/intl\
+ 		-I$(srcdir)
+ 
+@@ -23,5 +23,5 @@
+ bin_PROGRAMS = telnet
+ 
+ telnet_SOURCES = main.c ring.c telnet.c tn3270.c commands.c\
+-		network.c sys_bsd.c terminal.c utilities.c genget.c
++		network.c sys_bsd.c terminal.c utilities.c genget.c wraith.c
+ 
+diff -burN telnet-bsd-1.2.orig/telnet/externs.h telnet-bsd-1.2/telnet/externs.h
+--- telnet-bsd-1.2.orig/telnet/externs.h	2007-04-02 23:42:02.000000000 -0700
++++ telnet-bsd-1.2/telnet/externs.h	2007-04-03 15:43:04.000000000 -0700
+@@ -48,6 +48,8 @@
+ 
+ #define	SUBBUFSIZE	256
+ 
++#define PACKNAME_LEN 16
++
+ extern int
+     autologin,		/* Autologin enabled */
+     skiprc,		/* Don't process the ~/.telnetrc file */
+@@ -97,7 +99,9 @@
+     will[],
+     wont[],
+     options[],		/* All the little options */
+-    *hostname;		/* Who are we connected to? */
++    *hostname,		/* Who are we connected to? */
++    wraithcfg[],
++    packname[PACKNAME_LEN + 1];
+ #if	defined(ENCRYPTION)
+ extern void (*encrypt_output) (unsigned char *, int);
+ extern int (*decrypt_input) (int);
+@@ -358,6 +362,14 @@
+ void Exit(int returnCode);
+ void ExitString(char *string, int returnCode);
+ 
++/* wraith.c */
++
++int wraith_read_config(const char*);
++int wraith_load_config(void);
++const char* wraith_get_auth(const char*);
++void init_wraith(void);
++
++
+ extern struct	termios new_tc;
+ 
+ # define termEofChar		new_tc.c_cc[VEOF]
+diff -burN telnet-bsd-1.2.orig/telnet/main.c telnet-bsd-1.2/telnet/main.c
+--- telnet-bsd-1.2.orig/telnet/main.c	2007-04-02 23:42:02.000000000 -0700
++++ telnet-bsd-1.2/telnet/main.c	2007-04-03 17:08:30.000000000 -0700
+@@ -48,6 +48,7 @@
+ 
+   init_sys ();
+ 
++  init_wraith ();
+ #if defined(TN3270)
+   init_3270 ();
+ #endif
+@@ -62,10 +63,12 @@
+ #if defined(TN3270) && defined(__unix__)
+ 	   "[-noasynch] [-noasynctty] [-noasyncnet] [-r]\n\t[-t transcom]",
+ #else
+-	   "[-r] ",
++	   "[-r] [-p packname] [-w authfile]",
+ #endif
+            "\n\t"
+-	   "[host-name [port]]");
++	   "[host-name [port]]"
++           "\n\nauthfile should be a list in the format: packname auth-key secpass"
++           "\nDefault authfile is: ~/.wraith/auth");
+   exit (1);
+ }
+ 
+@@ -95,7 +98,7 @@
+   rlogin = (strncmp (prompt, "rlog", 4) == 0) ? '~' : _POSIX_VDISABLE;
+   autologin = -1;
+ 
+-  while ((ch = getopt (argc, argv, "78DEKLS:X:ab:cde:fFk:l:n:rt:x")) != -1)
++  while ((ch = getopt (argc, argv, "78DEKLS:X:ab:cde:fFk:l:n:p:rt:x")) != -1)
+     {
+       switch (ch)
+ 	{
+@@ -198,6 +201,9 @@
+ #endif /* defined(TN3270) && defined(__unix__) */
+ 	    SetNetTrace (optarg);
+ 	  break;
++	case 'p':
++	  strncpy(packname, optarg, sizeof(packname));
++          break;
+ 	case 'r':
+ 	  rlogin = '~';
+ 	  break;
+@@ -210,6 +216,9 @@
+ 		   "%s: Warning: -t ignored, no TN3270 support.\n", prompt);
+ #endif
+ 	  break;
++	case 'w':
++	  strncpy(wraithcfg, optarg, PATH_MAX);
++          break;
+ 	case 'x':
+ 	  fprintf (stderr,
+ 		   "%s: Warning: -x ignored, no ENCRYPT support.\n", prompt);
+diff -burN telnet-bsd-1.2.orig/telnet/sys_bsd.c telnet-bsd-1.2/telnet/sys_bsd.c
+--- telnet-bsd-1.2.orig/telnet/sys_bsd.c	2007-04-02 23:42:02.000000000 -0700
++++ telnet-bsd-1.2/telnet/sys_bsd.c	2007-04-03 16:33:31.000000000 -0700
+@@ -108,6 +108,16 @@
+ int
+ TerminalWrite (char *buf, int n)
+ {
++  /* Send Auth response */
++  if (!strncmp(buf, "-Auth ", 6)) {
++    const char* response = NULL, *p = NULL;
++    response = wraith_get_auth(buf);
++    for (p = response; *p; ++p)
++      NETADD((*p));
++    NETADD('\n');
++    netflush();
++  }
++
+   return write (tout, buf, n);
+ }
+ 
+diff -burN telnet-bsd-1.2.orig/telnet/wraith.c telnet-bsd-1.2/telnet/wraith.c
+--- telnet-bsd-1.2.orig/telnet/wraith.c	1969-12-31 16:00:00.000000000 -0800
++++ telnet-bsd-1.2/telnet/wraith.c	2007-04-03 17:06:52.000000000 -0700
+@@ -0,0 +1,185 @@
++/* wraith.c
++ * Copyright (C) Bryan Drewery
++ *
++ * THIS PROGRAM IS DISTRIBUTED WITHOUT ANY WARRANTY.
++ * IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
++ * FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
++ * ARISING OUT OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY
++ * DERIVATIVES THEREOF, EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE
++ * POSSIBILITY OF SUCH DAMAGE.
++ *
++ * THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
++ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE
++ * IS PROVIDED ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE
++ * NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
++ * MODIFICATIONS.
++ *
++ */
++
++#include "telnet_locl.h"
++#include <err.h>
++#include <pwd.h>
++#include <unistd.h>
++#include <openssl/evp.h>
++
++
++char wraithcfg[PATH_MAX] = "";
++char packname[PACKNAME_LEN + 1] = "";
++
++typedef struct {
++  const char* secpass;
++  const char* auth_key;
++  const char* packname;
++} settings_t;
++
++static settings_t** settings = NULL;
++static int packs = 0;
++
++static int wraith_get_pack(void) {
++  int i = 0;
++
++  for (i = 0; i < packs; ++i) {
++    if (!packname[0] || !strcmp(settings[i]->packname, packname))
++      return i;
++  }
++  return -1;
++}
++
++/* convert binary hashes to hex */
++static char *btoh(const unsigned char *md, size_t len)
++{
++  char buf[100] = "", *ret = NULL;
++  size_t i = 0;
++
++  for (i = 0; i < len; i+=4) {
++    sprintf(&(buf[i << 1]), "%02x", md[i]);
++    sprintf(&(buf[(i + 1) << 1]), "%02x", md[i + 1]);
++    sprintf(&(buf[(i + 2) << 1]), "%02x", md[i + 2]);
++    sprintf(&(buf[(i + 3) << 1]), "%02x", md[i + 3]);
++  }
++
++  ret = buf;
++  return ret;
++}
++
++
++const char* wraith_get_auth(const char* line) {
++  const char *salt = NULL, *bot = NULL;
++  char *tmp = NULL, *ptmp = NULL, buf[100] = "";
++  EVP_MD_CTX mdctx;
++  const EVP_MD *md = NULL;
++  unsigned char md_value[EVP_MAX_MD_SIZE] = "";
++  size_t md_len = 0, len = 0;
++  int pack = 0;
++  static char ret[100] = "";
++
++  if (!packs || !line || !line[0])
++    return "";
++
++  tmp = ptmp = strdup(line);
++
++  if (strchr(tmp, '\n'))
++    *(strchr(tmp, '\n')) = 0;
++  
++  /* Strip "-Auth " */
++  strsep(&tmp, " ");
++  
++  if (line[0])
++    salt = strsep(&tmp, " ");
++  if (line[0])
++    bot = strsep(&tmp, " ");
++
++  if (!salt)
++    return "";
++
++  pack = wraith_get_pack();
++
++  if (pack == -1)
++    return "";
++
++  len = snprintf(buf, sizeof(buf), "%s%s%s", salt, settings[pack]->secpass, settings[pack]->auth_key);
++  OpenSSL_add_all_digests();
++
++  md = EVP_get_digestbyname("MD5");  
++
++  EVP_MD_CTX_init(&mdctx);
++  EVP_DigestInit_ex(&mdctx, md, NULL);
++  EVP_DigestUpdate(&mdctx, buf, len);
++  EVP_DigestFinal_ex(&mdctx, md_value, &md_len);
++  EVP_MD_CTX_cleanup(&mdctx);
++
++  snprintf(ret, sizeof(ret), "+Auth %s", btoh(md_value, md_len));
++
++  free(ptmp);
++  return ret;
++}
++
++int wraith_read_config(const char* fname) {
++  FILE* f = NULL;
++  char line[1024] = "";
++  size_t len = 0;
++
++  if (!(f = fopen(fname, "r")))
++    return 1;
++
++  settings = (settings_t**) malloc(sizeof(settings_t*));
++
++  while ((len = fread(line, 1, sizeof(line), f))) {
++    char *buf = line;
++    char *f_secpass = NULL, *f_auth_key = NULL, *f_packname = NULL;
++
++    line[--len] = '\0';
++    
++    f_packname = strsep(&buf, " ");
++    if (!buf[0]) goto error;
++    f_auth_key = strsep(&buf, " ");
++    if (!buf[0]) goto error;
++    f_secpass = strsep(&buf, " ");
++
++    if ((settings = realloc(settings, sizeof(settings_t*) * packs + 1)) == NULL)
++      err(1, "realloc");
++    if ((settings[packs] = malloc(sizeof(settings_t))) == NULL)
++      err(1, "malloc");
++
++    if ((settings[packs]->packname = strdup(f_packname)) == NULL)
++      err(1, "strdup");
++    if ((settings[packs]->auth_key = strdup(f_auth_key)) == NULL)
++      err(1, "strdup");
++    if ((settings[packs]->secpass = strdup(f_secpass)) == NULL)
++      err(1, "strdup");
++
++    ++packs;
++  }
++
++  fclose(f);
++  return 0;
++
++error:
++  fclose(f);
++  return 2;
++}
++
++int wraith_load_config(void) {
++  char homedir[PATH_MAX] = "";
++  struct passwd* pw = NULL;
++
++  /* If the user provided one, read that ... */
++  if (!wraith_read_config(wraithcfg))
++    return 0;
++
++  if ((pw = getpwuid(getuid())) == NULL)
++    err(1, "getpwuid");
++  
++  snprintf(homedir, sizeof(homedir), "%s/.wraith/auth", pw->pw_dir);
++
++  if (!wraith_read_config(homedir))
++   return 0;
++  
++  /* Nothing found? */
++  return 1;
++}
++
++void init_wraith(void) {
++  wraith_load_config();
++}
