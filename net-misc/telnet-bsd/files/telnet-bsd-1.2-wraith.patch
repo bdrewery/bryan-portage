@@ -1,6 +1,6 @@
 diff -burN telnet-bsd-1.2.orig/telnet/Makefile.am telnet-bsd-1.2/telnet/Makefile.am
---- telnet-bsd-1.2.orig/telnet/Makefile.am	2007-04-02 23:42:02.000000000 -0700
-+++ telnet-bsd-1.2/telnet/Makefile.am	2007-04-03 13:34:12.000000000 -0700
+--- telnet-bsd-1.2.orig/telnet/Makefile.am	2007-04-03 19:57:48.000000000 -0700
++++ telnet-bsd-1.2/telnet/Makefile.am	2007-04-03 20:00:21.000000000 -0700
 @@ -7,7 +7,7 @@
  
  AM_CFLAGS = @EXTRA_CFLAGS@ -DENV_HACK -DUSE_TERMIO -DKLUDGELINEMODE -D_GNU_SOURCE @PIE_CFLAGS@
@@ -18,8 +18,8 @@ diff -burN telnet-bsd-1.2.orig/telnet/Makefile.am telnet-bsd-1.2/telnet/Makefile
 +		network.c sys_bsd.c terminal.c utilities.c genget.c wraith.c
  
 diff -burN telnet-bsd-1.2.orig/telnet/externs.h telnet-bsd-1.2/telnet/externs.h
---- telnet-bsd-1.2.orig/telnet/externs.h	2007-04-02 23:42:02.000000000 -0700
-+++ telnet-bsd-1.2/telnet/externs.h	2007-04-03 15:43:04.000000000 -0700
+--- telnet-bsd-1.2.orig/telnet/externs.h	2007-04-03 19:57:48.000000000 -0700
++++ telnet-bsd-1.2/telnet/externs.h	2007-04-03 20:00:21.000000000 -0700
 @@ -48,6 +48,8 @@
  
  #define	SUBBUFSIZE	256
@@ -56,8 +56,8 @@ diff -burN telnet-bsd-1.2.orig/telnet/externs.h telnet-bsd-1.2/telnet/externs.h
  
  # define termEofChar		new_tc.c_cc[VEOF]
 diff -burN telnet-bsd-1.2.orig/telnet/main.c telnet-bsd-1.2/telnet/main.c
---- telnet-bsd-1.2.orig/telnet/main.c	2007-04-02 23:42:02.000000000 -0700
-+++ telnet-bsd-1.2/telnet/main.c	2007-04-03 17:08:30.000000000 -0700
+--- telnet-bsd-1.2.orig/telnet/main.c	2007-04-03 19:57:48.000000000 -0700
++++ telnet-bsd-1.2/telnet/main.c	2007-04-03 20:00:43.000000000 -0700
 @@ -48,6 +48,7 @@
  
    init_sys ();
@@ -66,13 +66,14 @@ diff -burN telnet-bsd-1.2.orig/telnet/main.c telnet-bsd-1.2/telnet/main.c
  #if defined(TN3270)
    init_3270 ();
  #endif
-@@ -62,10 +63,12 @@
+@@ -62,10 +63,13 @@
  #if defined(TN3270) && defined(__unix__)
  	   "[-noasynch] [-noasynctty] [-noasyncnet] [-r]\n\t[-t transcom]",
  #else
 -	   "[-r] ",
-+	   "[-r] [-p packname] [-w authfile]",
++	   "[-r]",
  #endif
++           "[-p packname] [-w authfile]"
             "\n\t"
 -	   "[host-name [port]]");
 +	   "[host-name [port]]"
@@ -81,16 +82,16 @@ diff -burN telnet-bsd-1.2.orig/telnet/main.c telnet-bsd-1.2/telnet/main.c
    exit (1);
  }
  
-@@ -95,7 +98,7 @@
+@@ -95,7 +99,7 @@
    rlogin = (strncmp (prompt, "rlog", 4) == 0) ? '~' : _POSIX_VDISABLE;
    autologin = -1;
  
 -  while ((ch = getopt (argc, argv, "78DEKLS:X:ab:cde:fFk:l:n:rt:x")) != -1)
-+  while ((ch = getopt (argc, argv, "78DEKLS:X:ab:cde:fFk:l:n:p:rt:x")) != -1)
++  while ((ch = getopt (argc, argv, "78DEKLS:X:ab:cde:fFk:l:n:p:rt:w:x")) != -1)
      {
        switch (ch)
  	{
-@@ -198,6 +201,9 @@
+@@ -198,6 +202,9 @@
  #endif /* defined(TN3270) && defined(__unix__) */
  	    SetNetTrace (optarg);
  	  break;
@@ -100,7 +101,7 @@ diff -burN telnet-bsd-1.2.orig/telnet/main.c telnet-bsd-1.2/telnet/main.c
  	case 'r':
  	  rlogin = '~';
  	  break;
-@@ -210,6 +216,9 @@
+@@ -210,6 +217,9 @@
  		   "%s: Warning: -t ignored, no TN3270 support.\n", prompt);
  #endif
  	  break;
@@ -111,8 +112,8 @@ diff -burN telnet-bsd-1.2.orig/telnet/main.c telnet-bsd-1.2/telnet/main.c
  	  fprintf (stderr,
  		   "%s: Warning: -x ignored, no ENCRYPT support.\n", prompt);
 diff -burN telnet-bsd-1.2.orig/telnet/sys_bsd.c telnet-bsd-1.2/telnet/sys_bsd.c
---- telnet-bsd-1.2.orig/telnet/sys_bsd.c	2007-04-02 23:42:02.000000000 -0700
-+++ telnet-bsd-1.2/telnet/sys_bsd.c	2007-04-03 16:33:31.000000000 -0700
+--- telnet-bsd-1.2.orig/telnet/sys_bsd.c	2007-04-03 19:57:48.000000000 -0700
++++ telnet-bsd-1.2/telnet/sys_bsd.c	2007-04-03 20:00:21.000000000 -0700
 @@ -108,6 +108,16 @@
  int
  TerminalWrite (char *buf, int n)
@@ -132,7 +133,7 @@ diff -burN telnet-bsd-1.2.orig/telnet/sys_bsd.c telnet-bsd-1.2/telnet/sys_bsd.c
  
 diff -burN telnet-bsd-1.2.orig/telnet/wraith.c telnet-bsd-1.2/telnet/wraith.c
 --- telnet-bsd-1.2.orig/telnet/wraith.c	1969-12-31 16:00:00.000000000 -0800
-+++ telnet-bsd-1.2/telnet/wraith.c	2007-04-03 17:06:52.000000000 -0700
++++ telnet-bsd-1.2/telnet/wraith.c	2007-04-03 20:00:21.000000000 -0700
 @@ -0,0 +1,185 @@
 +/* wraith.c
 + * Copyright (C) Bryan Drewery
