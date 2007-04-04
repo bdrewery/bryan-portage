@@ -2,6 +2,11 @@
 # Copyright 1999-2007 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/net-misc/telnet-bsd/ChangeLog,v 1.37 2007/01/07 18:33:56 antarus Exp $
 
+  04 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Added auth support
+  edit ~/.wraith/authfile -- format:
+  packname auth-key secpass
+
   07 Jan 2007; Alec Warner <antarus@gentoo.org> telnet-bsd-1.2-r1.ebuild:
   fix autotools for bug # 160549
 
