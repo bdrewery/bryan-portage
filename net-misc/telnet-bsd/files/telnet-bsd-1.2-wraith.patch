@@ -1,6 +1,6 @@
 diff -burN telnet-bsd-1.2.orig/telnet/Makefile.am telnet-bsd-1.2/telnet/Makefile.am
---- telnet-bsd-1.2.orig/telnet/Makefile.am	2007-04-03 21:09:38.000000000 -0700
-+++ telnet-bsd-1.2/telnet/Makefile.am	2007-04-03 21:09:51.000000000 -0700
+--- telnet-bsd-1.2.orig/telnet/Makefile.am	2007-04-04 07:31:12.000000000 -0700
++++ telnet-bsd-1.2/telnet/Makefile.am	2007-04-04 07:31:15.000000000 -0700
 @@ -7,7 +7,7 @@
  
  AM_CFLAGS = @EXTRA_CFLAGS@ -DENV_HACK -DUSE_TERMIO -DKLUDGELINEMODE -D_GNU_SOURCE @PIE_CFLAGS@
@@ -18,8 +18,8 @@ diff -burN telnet-bsd-1.2.orig/telnet/Makefile.am telnet-bsd-1.2/telnet/Makefile
 +		network.c sys_bsd.c terminal.c utilities.c genget.c wraith.c
  
 diff -burN telnet-bsd-1.2.orig/telnet/externs.h telnet-bsd-1.2/telnet/externs.h
---- telnet-bsd-1.2.orig/telnet/externs.h	2007-04-03 21:09:38.000000000 -0700
-+++ telnet-bsd-1.2/telnet/externs.h	2007-04-03 21:09:51.000000000 -0700
+--- telnet-bsd-1.2.orig/telnet/externs.h	2007-04-04 07:31:12.000000000 -0700
++++ telnet-bsd-1.2/telnet/externs.h	2007-04-04 07:31:15.000000000 -0700
 @@ -48,6 +48,8 @@
  
  #define	SUBBUFSIZE	256
@@ -56,8 +56,8 @@ diff -burN telnet-bsd-1.2.orig/telnet/externs.h telnet-bsd-1.2/telnet/externs.h
  
  # define termEofChar		new_tc.c_cc[VEOF]
 diff -burN telnet-bsd-1.2.orig/telnet/main.c telnet-bsd-1.2/telnet/main.c
---- telnet-bsd-1.2.orig/telnet/main.c	2007-04-03 21:09:38.000000000 -0700
-+++ telnet-bsd-1.2/telnet/main.c	2007-04-03 21:09:59.000000000 -0700
+--- telnet-bsd-1.2.orig/telnet/main.c	2007-04-04 07:31:12.000000000 -0700
++++ telnet-bsd-1.2/telnet/main.c	2007-04-04 07:31:15.000000000 -0700
 @@ -48,6 +48,7 @@
  
    init_sys ();
@@ -109,8 +109,8 @@ diff -burN telnet-bsd-1.2.orig/telnet/main.c telnet-bsd-1.2/telnet/main.c
  	  fprintf (stderr,
  		   "%s: Warning: -x ignored, no ENCRYPT support.\n", prompt);
 diff -burN telnet-bsd-1.2.orig/telnet/sys_bsd.c telnet-bsd-1.2/telnet/sys_bsd.c
---- telnet-bsd-1.2.orig/telnet/sys_bsd.c	2007-04-03 21:09:38.000000000 -0700
-+++ telnet-bsd-1.2/telnet/sys_bsd.c	2007-04-03 21:09:51.000000000 -0700
+--- telnet-bsd-1.2.orig/telnet/sys_bsd.c	2007-04-04 07:31:12.000000000 -0700
++++ telnet-bsd-1.2/telnet/sys_bsd.c	2007-04-04 07:31:15.000000000 -0700
 @@ -108,6 +108,16 @@
  int
  TerminalWrite (char *buf, int n)
@@ -130,8 +130,8 @@ diff -burN telnet-bsd-1.2.orig/telnet/sys_bsd.c telnet-bsd-1.2/telnet/sys_bsd.c
  
 diff -burN telnet-bsd-1.2.orig/telnet/wraith.c telnet-bsd-1.2/telnet/wraith.c
 --- telnet-bsd-1.2.orig/telnet/wraith.c	1969-12-31 16:00:00.000000000 -0800
-+++ telnet-bsd-1.2/telnet/wraith.c	2007-04-03 21:09:51.000000000 -0700
-@@ -0,0 +1,185 @@
++++ telnet-bsd-1.2/telnet/wraith.c	2007-04-04 07:32:19.000000000 -0700
+@@ -0,0 +1,190 @@
 +/* wraith.c
 + * Copyright (C) Bryan Drewery
 + *
@@ -266,6 +266,11 @@ diff -burN telnet-bsd-1.2.orig/telnet/wraith.c telnet-bsd-1.2/telnet/wraith.c
 +    line[--len] = '\0';
 +    
 +    f_packname = strsep(&buf, " ");
++
++    /* Is this pack commented out? */
++    if (f_packname[0] == '#' || (f_packname[0] == '/' && f_packname[1] == '/'))
++      continue;
++
 +    if (!buf[0]) goto error;
 +    f_auth_key = strsep(&buf, " ");
 +    if (!buf[0]) goto error;
