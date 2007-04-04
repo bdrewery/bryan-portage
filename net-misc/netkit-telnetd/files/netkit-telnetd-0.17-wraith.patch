@@ -1,6 +1,6 @@
 diff -burN netkit-telnet-0.17.orig/telnet/Makefile netkit-telnet-0.17/telnet/Makefile
---- netkit-telnet-0.17.orig/telnet/Makefile	2007-04-03 18:16:30.000000000 -0700
-+++ netkit-telnet-0.17/telnet/Makefile	2007-04-03 18:16:45.000000000 -0700
+--- netkit-telnet-0.17.orig/telnet/Makefile	2007-04-03 20:05:08.000000000 -0700
++++ netkit-telnet-0.17/telnet/Makefile	2007-04-03 20:05:42.000000000 -0700
 @@ -7,10 +7,10 @@
  
  # -DAUTHENTICATE
@@ -15,8 +15,8 @@ diff -burN netkit-telnet-0.17.orig/telnet/Makefile netkit-telnet-0.17/telnet/Mak
  OBJS = $(patsubst %.cc, %.o, $(SRCS))
  
 diff -burN netkit-telnet-0.17.orig/telnet/externs.h netkit-telnet-0.17/telnet/externs.h
---- netkit-telnet-0.17.orig/telnet/externs.h	2007-04-03 18:16:30.000000000 -0700
-+++ netkit-telnet-0.17/telnet/externs.h	2007-04-03 18:16:45.000000000 -0700
+--- netkit-telnet-0.17.orig/telnet/externs.h	2007-04-03 20:05:08.000000000 -0700
++++ netkit-telnet-0.17/telnet/externs.h	2007-04-03 20:05:42.000000000 -0700
 @@ -56,6 +56,8 @@
  
  #define	SUBBUFSIZE	256
@@ -37,8 +37,8 @@ diff -burN netkit-telnet-0.17.orig/telnet/externs.h netkit-telnet-0.17/telnet/ex
   * We keep track of each side of the option negotiation.
   */
 diff -burN netkit-telnet-0.17.orig/telnet/main.cc netkit-telnet-0.17/telnet/main.cc
---- netkit-telnet-0.17.orig/telnet/main.cc	2007-04-03 18:16:30.000000000 -0700
-+++ netkit-telnet-0.17/telnet/main.cc	2007-04-03 18:16:45.000000000 -0700
+--- netkit-telnet-0.17.orig/telnet/main.cc	2007-04-03 20:05:08.000000000 -0700
++++ netkit-telnet-0.17/telnet/main.cc	2007-04-03 20:05:55.000000000 -0700
 @@ -69,6 +69,7 @@
  
      init_sys();
@@ -63,7 +63,7 @@ diff -burN netkit-telnet-0.17.orig/telnet/main.cc netkit-telnet-0.17/telnet/main
  
  	while ((ch = getopt(argc, argv,
 -			    "4678EKLS:X:ab:de:k:l:n:rt:x")) != EOF) {
-+			    "4678EKLS:X:ab:de:k:l:n:p:rt:x")) != EOF) {
++			    "4678EKLS:X:ab:de:k:l:n:p:rt:w:x")) != EOF) {
  		switch(ch) {
  		case '4':
  			family = AF_INET;
@@ -88,8 +88,8 @@ diff -burN netkit-telnet-0.17.orig/telnet/main.cc netkit-telnet-0.17/telnet/main
  			fprintf(stderr,
  				"%s: -x ignored, no encryption support.\n",
 diff -burN netkit-telnet-0.17.orig/telnet/proto.h netkit-telnet-0.17/telnet/proto.h
---- netkit-telnet-0.17.orig/telnet/proto.h	2007-04-03 18:16:30.000000000 -0700
-+++ netkit-telnet-0.17/telnet/proto.h	2007-04-03 18:16:45.000000000 -0700
+--- netkit-telnet-0.17.orig/telnet/proto.h	2007-04-03 20:05:08.000000000 -0700
++++ netkit-telnet-0.17/telnet/proto.h	2007-04-03 20:05:42.000000000 -0700
 @@ -39,3 +39,10 @@
  
  /* commands.c */
@@ -102,8 +102,8 @@ diff -burN netkit-telnet-0.17.orig/telnet/proto.h netkit-telnet-0.17/telnet/prot
 +const char* wraith_get_auth(const char*);
 +void init_wraith(void);
 diff -burN netkit-telnet-0.17.orig/telnet/terminal.cc netkit-telnet-0.17/telnet/terminal.cc
---- netkit-telnet-0.17.orig/telnet/terminal.cc	2007-04-03 18:16:30.000000000 -0700
-+++ netkit-telnet-0.17/telnet/terminal.cc	2007-04-03 18:16:45.000000000 -0700
+--- netkit-telnet-0.17.orig/telnet/terminal.cc	2007-04-03 20:05:08.000000000 -0700
++++ netkit-telnet-0.17/telnet/terminal.cc	2007-04-03 20:05:42.000000000 -0700
 @@ -285,6 +285,17 @@
  
  static int TerminalWrite(const char *buf, int n) {
@@ -124,7 +124,7 @@ diff -burN netkit-telnet-0.17.orig/telnet/terminal.cc netkit-telnet-0.17/telnet/
      } while (r<0 && errno==EINTR);
 diff -burN netkit-telnet-0.17.orig/telnet/wraith.c netkit-telnet-0.17/telnet/wraith.c
 --- netkit-telnet-0.17.orig/telnet/wraith.c	1969-12-31 16:00:00.000000000 -0800
-+++ netkit-telnet-0.17/telnet/wraith.c	2007-04-03 18:17:40.000000000 -0700
++++ netkit-telnet-0.17/telnet/wraith.c	2007-04-03 20:05:42.000000000 -0700
 @@ -0,0 +1,193 @@
 +/* wraith.c
 + * Copyright (C) Bryan Drewery
