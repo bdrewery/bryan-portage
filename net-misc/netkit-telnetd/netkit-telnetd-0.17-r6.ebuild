@@ -16,7 +16,7 @@ KEYWORDS="alpha amd64 arm hppa ia64 mips ppc ppc64 sparc x86"
 IUSE="build wraith"
 
 DEPEND=">=sys-libs/ncurses-5.2
-	wraith? ( dev-libs/openssl)
+	wraith? ( dev-libs/openssl )
 	!net-misc/telnet-bsd"
 
 S=${WORKDIR}/netkit-telnet-${PV}
@@ -42,7 +42,7 @@ src_unpack() {
 		|| die
 
 	if use wraith; then
-        	epatch ${FILESDIR}/netkit-telnetd-0.17-wraith.patch || die
+		epatch ${FILESDIR}/netkit-telnetd-0.17-wraith.patch || die
 	fi
 }
 
