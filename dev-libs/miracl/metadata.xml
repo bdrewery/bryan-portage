@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<herd>no-herd</herd>
+<maintainer>
+  <email>bryan@shatow.net</email>
+  <description>Miracl - Multiprecision Integer and Rational Arithmetic C/C++ Library</description>
+</maintainer>
+<longdescription>
+MIRACL is a Big Number Library which implements all of the primitives
+necessary to design Big Number Cryptography into your real-world
+application. It is primarily a tool for cryptographic system
+implementors. RSA public key cryptography, Diffie-Hellman Key
+exchange, DSA digital signature, they are all just a few procedure
+calls away. Support is also included for even more esoteric Elliptic
+Curves and Lucas function based schemes. The latest version offers
+full support for Elliptic Curve Cryptography over GF(p) and GF(2m).
+Less well-known techniques can also be implemented as MIRACL allows
+you to work directly and efficiently with the big numbers that are
+the building blocks of number-theoretic cryptography. Although
+implemented as a C library, a well-thought out C++ wrapper is
+provided, which greatly simplifies program development. Most example
+programs (25+ of them) are provided in both C and C++ versions.
+
+WWW: http://www.shamus.ie/
+</longdescription>
+</pkgmetadata>
