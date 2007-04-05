@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit eutils
+inherit eutils toolchain-funcs
 # Short one-line description of this package.
 DESCRIPTION="MIRACL crypto library"
 
@@ -36,11 +36,18 @@ src_unpack() {
 src_compile() {
 	# The source tarbal provides no Makefile/autoconf
 	# Instead of providing a patch with a Makefile, let's just modify the given compile script
-	sed --in-place=~ "s/\(gcc .*\) -O2 \(.*\)/\1 ${CFLAGS} \2/" linux || die "Failed to update build script"
-	sed --in-place=~ "s/\(g++ .*\) -O2 \(.*\)/\1 ${CXXFLAGS} \2/" linux || die "Failed to update build script"
+	local script="linux"
+	local myfail="Failed to update build script"
+
+	sed --in-place=~ "s/\(^gcc\) \(.*\) -O2 \(.*\)/$(tc-getCC) \2 ${CFLAGS} \3/" ${script} || die ${myfail}
+	sed --in-place=~ "s/\(^g++\) \(.*\) -O2 \(.*\)/$(tc-getCXX) \2 ${CXXFLAGS} \3/" ${script} || die ${myfail}
+	sed --in-place=~ "s/\(^gcc\) \(.*\)/$(tc-getCC) \2/" ${script} || die ${myfail}
+	sed --in-place=~ "s/\(^g++\) \(.*\)/$(tc-getCXX) \2/" ${script} || die ${myfail}
+	sed --in-place=~ "s/\(^ar\) \(.*\)/$(tc-getAR) \2/" ${script} || die ${myfail}
+	sed --in-place=~ "s/\(^as\) \(.*\)/$(tc-getAS) \2/" ${script} || die ${myfail}
 
 	# source tarbal provides a linux compile script -- No output given
-	sh linux || die "Compile failed"
+	sh ${script} || die "Compile failed"
 }
 
 src_install() {
