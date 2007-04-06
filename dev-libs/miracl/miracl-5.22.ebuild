@@ -11,7 +11,8 @@ HOMEPAGE="http://www.shamus.ie"
 
 # Point to any required sources; these will be automatically downloaded by
 # Portage.
-SRC_URI="ftp://ftp.computing.dcu.ie/pub/crypto/miracl.zip"
+SRC_URI="ftp://ftp.computing.dcu.ie/pub/crypto/miracl.zip
+	http://www.shamus.ie/uploads/File/miracl8.zip"
 
 LICENSE="free-noncomm"
 SLOT="0"

@@ -2,6 +2,9 @@
 # Copyright 1999-2007 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+  06 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Add a mirror
+
   05 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Fix build script to use proper toolchan functions
 
