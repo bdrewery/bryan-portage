@@ -3,6 +3,9 @@
 # $Header: $
 
   06 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Simplified seds into 1 call
+
+  06 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Add a mirror
 
   05 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:

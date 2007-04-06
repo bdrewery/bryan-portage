@@ -11,8 +11,7 @@ HOMEPAGE="http://www.shamus.ie"
 
 # Point to any required sources; these will be automatically downloaded by
 # Portage.
-SRC_URI="ftp://ftp.computing.dcu.ie/pub/crypto/miracl.zip
-	http://www.shamus.ie/uploads/File/miracl8.zip"
+SRC_URI="ftp://ftp.computing.dcu.ie/pub/crypto/miracl.zip"
 
 LICENSE="free-noncomm"
 SLOT="0"
@@ -41,13 +40,14 @@ src_compile() {
 	# Instead of providing a patch with a Makefile, let's just modify the given compile script
 	local script="linux"
 	local myfail="Failed to update build script"
-
-	sed --in-place=~ "s/\(^gcc\) \(.*\) -O2 \(.*\)/$(tc-getCC) \2 ${CFLAGS} \3/" ${script} || die ${myfail}
-	sed --in-place=~ "s/\(^g++\) \(.*\) -O2 \(.*\)/$(tc-getCXX) \2 ${CXXFLAGS} \3/" ${script} || die ${myfail}
-	sed --in-place=~ "s/\(^gcc\) \(.*\)/$(tc-getCC) \2/" ${script} || die ${myfail}
-	sed --in-place=~ "s/\(^g++\) \(.*\)/$(tc-getCXX) \2/" ${script} || die ${myfail}
-	sed --in-place=~ "s/\(^ar\) \(.*\)/$(tc-getAR) \2/" ${script} || die ${myfail}
-	sed --in-place=~ "s/\(^as\) \(.*\)/$(tc-getAS) \2/" ${script} || die ${myfail}
+	sed --in-place=~ \
+		-e "s/\(^gcc\) \(.*\) -O2 \(.*\)/$(tc-getCC) \2 ${CFLAGS} \3/" \
+		-e "s/\(^g++\) \(.*\) -O2 \(.*\)/$(tc-getCXX) \2 ${CXXFLAGS} \3/" \
+		-e "s/\(^gcc\) \(.*\)/$(tc-getCC) \2/" \
+		-e "s/\(^g++\) \(.*\)/$(tc-getCXX) \2/" \
+		-e "s/\(^ar\) \(.*\)/$(tc-getAR) \2/" \
+		-e "s/\(^as\) \(.*\)/$(tc-getAS) \2/" \
+		${script} || die ${myfail}
 
 	# source tarbal provides a linux compile script -- No output given
 	sh ${script} || die "Compile failed"
