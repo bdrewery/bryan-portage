@@ -55,8 +55,10 @@ src_compile() {
 
 src_install() {
 
-	dolib "${S}/${PN}.a" || die "Installing library failed"
+	dolib.a "${S}/${PN}.a" || die "Installing library failed"
 
+	
+	insopts -m 644
 	insinto /usr/include
 	doins "${S}/miracl.h" "${S}/mirdef.h" || die "Installing headers failed"
 }

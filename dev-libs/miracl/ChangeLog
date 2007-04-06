@@ -3,6 +3,10 @@
 # $Header: $
 
   06 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Chmod 644 on the headers
+  Use dolib.a on library
+
+  06 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Simplified seds into 1 call
 
   06 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
