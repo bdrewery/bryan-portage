@@ -40,7 +40,7 @@ src_compile() {
 	# Instead of providing a patch with a Makefile, let's just modify the given compile script
 	local script="linux"
 	local myfail="Failed to update build script"
-	sed --in-place=~ \
+	sed -i \
 		-e "s/\(^gcc\) \(.*\) -O2 \(.*\)/$(tc-getCC) \2 ${CFLAGS} \3/" \
 		-e "s/\(^g++\) \(.*\) -O2 \(.*\)/$(tc-getCXX) \2 ${CXXFLAGS} \3/" \
 		-e "s/\(^gcc\) \(.*\)/$(tc-getCC) \2/" \
