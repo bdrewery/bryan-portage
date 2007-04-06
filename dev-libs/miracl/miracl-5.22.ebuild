@@ -17,6 +17,8 @@ LICENSE="free-noncomm"
 SLOT="0"
 KEYWORDS="x86"
 
+RESTRICT="mirror"
+
 IUSE=""
 
 DEPEND=""
