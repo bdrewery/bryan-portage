@@ -11,7 +11,8 @@ HOMEPAGE="http://www.shamus.ie"
 
 # Point to any required sources; these will be automatically downloaded by
 # Portage.
-SRC_URI="ftp://ftp.computing.dcu.ie/pub/crypto/miracl.zip"
+#Use my own mirror to ensure builds don't change from 'miracl.zip' from upstream
+SRC_URI="http://www.shatow.net/gentoo/mirror/miracl-5.23.zip"
 
 LICENSE="free-noncomm"
 SLOT="0"
@@ -57,9 +58,12 @@ src_compile() {
 }
 
 src_install() {
-	dolib.a "${S}/${PN}.a" || die "Installing library failed"
+	cd ${S}
+	dolib.a miracl.a || die "Installing library failed"
 
 	insopts -m 644
 	insinto /usr/include
-	doins "${S}/miracl.h" "${S}/mirdef.h" || die "Installing headers failed"
+	doins miracl.h mirdef.h || die "Installing headers failed"
+
+	dodoc update.txt first.txt problems.txt readme.txt
 }

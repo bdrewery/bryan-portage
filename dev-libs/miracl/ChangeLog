@@ -2,6 +2,20 @@
 # Copyright 1999-2007 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+  07 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Also install a few docs
+
+  07 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Upstream release 5.2.3
+  Version 5.2.3
+  
+  New program irp.cpp to automatically generate optimal code for insertion
+  in the reduce2(.) function in mrecgf2m.c
+  The program findbase.cpp to find the "best" irreducible polynomial has
+  been updated.
+  New program newbasis.cpp converts a value from one irreducible polynomial
+  representation to another.
+
   06 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Chmod 644 on the headers
   Use dolib.a on library
