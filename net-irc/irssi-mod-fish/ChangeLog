@@ -3,5 +3,8 @@
 # $Header: $
 
   07 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Change homepage to official http://fish.sekure.us/
+
+  07 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Port irssi module FiSH (still needs some work)
 

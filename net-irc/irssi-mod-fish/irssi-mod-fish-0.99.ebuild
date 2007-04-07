@@ -5,10 +5,10 @@ inherit eutils toolchain-funcs
 
 IRSSI_PV="0.8.9"
 
-DESCRIPTION="FiSH irssi module"
+DESCRIPTION="FiSH blowfish encryption irssi module"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.shatow.net/gentoo/"
+HOMEPAGE="http://fish.sekure.us/"
 
 # Point to any required sources; these will be automatically downloaded by
 # Portage.
