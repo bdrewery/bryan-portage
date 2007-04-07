@@ -33,13 +33,12 @@ src_unpack() {
 
 	unzip -qo -j -aa -L "${DISTDIR}/${A}" || die "failure unpacking {$A}"
 	cd "${S}"
-}
 
-src_compile() {
 	# The source tarbal provides no Makefile/autoconf
 	# Instead of providing a patch with a Makefile, let's just modify the given compile script
 	local script="linux"
 	local myfail="Failed to update build script"
+	einfo "Applying patches to build script"
 	sed -i \
 		-e "s/\(^gcc\) \(.*\) -O2 \(.*\)/$(tc-getCC) \2 ${CFLAGS} \3/" \
 		-e "s/\(^g++\) \(.*\) -O2 \(.*\)/$(tc-getCXX) \2 ${CXXFLAGS} \3/" \
@@ -48,6 +47,10 @@ src_compile() {
 		-e "s/\(^ar\) \(.*\)/$(tc-getAR) \2/" \
 		-e "s/\(^as\) \(.*\)/$(tc-getAS) \2/" \
 		${script} || die ${myfail}
+}
+
+src_compile() {
+	local script="linux"
 
 	# source tarbal provides a linux compile script -- No output given
 	sh ${script} || die "Compile failed"
