@@ -1,0 +1,7 @@
+# ChangeLog for net-irc/irssi-mod-fish
+# Copyright 1999-2007 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+  07 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Port irssi module FiSH (still needs some work)
+
