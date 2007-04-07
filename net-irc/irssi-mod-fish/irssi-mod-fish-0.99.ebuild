@@ -17,7 +17,7 @@ SRC_URI="http://irssi.org/files/irssi-${IRSSI_PV}.tar.bz2
 
 LICENSE="as-is"
 SLOT="0"
-KEYWORDS="x86"
+KEYWORDS="x86 x86-fbsd"
 
 RESTRICT="mirror"
 
