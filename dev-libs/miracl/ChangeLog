@@ -2,6 +2,9 @@
 # Copyright 1999-2007 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+  08 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Disable all inline ASM as it's very non-portable
+
   07 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Also install a few docs
 

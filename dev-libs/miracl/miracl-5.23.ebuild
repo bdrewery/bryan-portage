@@ -22,7 +22,9 @@ RESTRICT="mirror"
 
 IUSE=""
 
-DEPEND=""
+DEPEND="
+	app-arch/unzip
+"
 RDEPEND="
 	${DEPEND}"
 
@@ -41,13 +43,14 @@ src_unpack() {
 	local myfail="Failed to update build script"
 	einfo "Applying patches to build script"
 	sed -i \
-		-e "s/\(^gcc\) \(.*\) -O2 \(.*\)/$(tc-getCC) \2 ${CFLAGS} \3/" \
-		-e "s/\(^g++\) \(.*\) -O2 \(.*\)/$(tc-getCXX) \2 ${CXXFLAGS} \3/" \
+		-e "s/\(^gcc\) \(.*\) -O2 \(.*\)/$(tc-getCC) \2 ${CFLAGS} -DMR_NOASM \3/" \
+		-e "s/\(^g++\) \(.*\) -O2 \(.*\)/$(tc-getCXX) \2 ${CXXFLAGS} -DMR_NOASM \3/" \
 		-e "s/\(^gcc\) \(.*\)/$(tc-getCC) \2/" \
 		-e "s/\(^g++\) \(.*\)/$(tc-getCXX) \2/" \
 		-e "s/\(^ar\) \(.*\)/$(tc-getAR) \2/" \
 		-e "s/\(^as\) \(.*\)/$(tc-getAS) \2/" \
 		${script} || die ${myfail}
+
 }
 
 src_compile() {
