@@ -2,6 +2,9 @@
 # Copyright 2002-2007 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/net-misc/netkit-telnetd/ChangeLog,v 1.41 2007/01/22 20:32:24 solar Exp $
 
+  24 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Fix auth file being parsed wrong
+
   04 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Add support for commented out packnames
 

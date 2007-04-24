@@ -1,23 +1,22 @@
 # Copyright 1999-2007 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/net-misc/netkit-telnetd/netkit-telnetd-0.17-r7.ebuild,v 1.4 2007/01/26 08:50:44 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/net-misc/netkit-telnetd/netkit-telnetd-0.17-r6.ebuild,v 1.14 2007/01/26 08:50:44 vapier Exp $
 
-inherit eutils toolchain-funcs
+inherit eutils
 
-PATCHLEVEL=32
+PATCHLEVEL=28
 DESCRIPTION="Standard Linux telnet client and server"
 HOMEPAGE="ftp://ftp.uk.linux.org/pub/linux/Networking/netkit/"
-# http://packages.debian.org/stablesource/netkit-telnet
-# http://packages.debian.org/testing/source/netkit-telnet
 SRC_URI="ftp://ftp.uk.linux.org/pub/linux/Networking/netkit/netkit-telnet-${PV}.tar.gz
 	mirror://debian/pool/main/n/netkit-telnet/netkit-telnet_0.17-${PATCHLEVEL}.diff.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc ~x86"
-IUSE="build"
+KEYWORDS="alpha amd64 arm hppa ia64 mips ppc ppc64 sparc x86"
+IUSE="build wraith"
 
 DEPEND=">=sys-libs/ncurses-5.2
+	wraith? ( dev-libs/openssl )
 	!net-misc/telnet-bsd"
 
 S=${WORKDIR}/netkit-telnet-${PV}
@@ -25,6 +24,7 @@ S=${WORKDIR}/netkit-telnet-${PV}
 src_unpack() {
 	unpack ${A}
 	cd ${S}
+
 	# Patch: [0]
 	# Gentoo lacks a maintainer for this package right now. And a 
 	# security problem arose. While reviewing our options for how 
@@ -40,6 +40,10 @@ src_unpack() {
 	# back to the deb folk?)
 	epatch ${FILESDIR}/netkit-telnetd-0.17-cflags-gnu_source.patch \
 		|| die
+
+	if use wraith; then
+		epatch ${FILESDIR}/${PF}-wraith.patch || die
+	fi
 }
 
 src_compile() {
@@ -48,8 +52,6 @@ src_compile() {
 	sed -i \
 		-e "s:-pipe -O2:${CFLAGS}:" \
 		-e "s:-Wpointer-arith::" \
-		-e "s:^CC=.*:CC=$(tc-getCC):" \
-		-e "s:^CXX=.*:CXX=$(tc-getCXX):" \
 		MCONFIG
 
 	make || die
