@@ -3,6 +3,9 @@
 # $Header: $
 
   17 Jun 2009; Bryan Drewery <bryan@shatow.net> ChangeLog:
+  Update to require irssi-0.8.13-r1 (Source must match currently installed irssi version)
+
+  17 Jun 2009; Bryan Drewery <bryan@shatow.net> ChangeLog:
   Change homepage to official http://fish.secure.la/
 
   07 Apr 2007; Bryan Drewery <bryan@shatow.net> ChangeLog:

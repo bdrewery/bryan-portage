@@ -3,7 +3,7 @@
 # $Header: $
 inherit eutils toolchain-funcs
 
-IRSSI_PV="0.8.9"
+IRSSI_PV="0.8.13"
 
 DESCRIPTION="FiSH blowfish encryption irssi module"
 
@@ -28,7 +28,7 @@ DEPEND="
 "
 
 RDEPEND="
-	>=net-irc/irssi-0.8.9
+	=net-irc/irssi-0.8.13-r1
 	${DEPEND}"
 
 # Source directory; the dir where the sources can be found (automatically
