@@ -3,8 +3,6 @@
 # $Header: $
 inherit eutils toolchain-funcs
 
-IRSSI_PV="0.8.13"
-
 DESCRIPTION="FiSH blowfish encryption irssi module"
 
 # Homepage, not used by Portage directly but handy for developer reference
@@ -12,8 +10,7 @@ HOMEPAGE="http://fish.secure.la/"
 
 # Point to any required sources; these will be automatically downloaded by
 # Portage.
-SRC_URI="http://irssi.org/files/irssi-${IRSSI_PV}.tar.bz2
-	http://fish.secure.la/irssi/FiSH-irssi.v${PV}-source.zip"
+SRC_URI="http://fish.secure.la/irssi/FiSH-irssi.v${PV}-source.zip"
 
 LICENSE="as-is"
 SLOT="0"
@@ -25,19 +22,16 @@ IUSE=""
 DEPEND="
 	>=dev-libs/glib-2.2.1
 	dev-libs/miracl
+	>=net-irc/irssi-0.8.9
 "
 
-RDEPEND="
-	=net-irc/irssi-0.8.13-r1
-	${DEPEND}"
+RDEPEND="${DEPEND}"
 
 # Source directory; the dir where the sources can be found (automatically
 # unpacked) inside ${WORKDIR}.  The default value for S is ${WORKDIR}/${P}
 # If you don't need to change it, leave the S= line out of the ebuild
 # to keep it tidy.
 S="${WORKDIR}/FiSH-irssi.v${PV}-source"
-
-S_IRSSI="${S}/../irssi-${IRSSI_PV}"
 
 src_unpack() {
 	unpack ${A}
@@ -51,7 +45,7 @@ src_unpack() {
 		-e "s:gcc:$(tc-getCC):" \
 		-e "s:-shared:-shared -fPIC -DPIC:" \
 		-e "s:\#glib_dir = /usr/local/include/glib-1\.2:glib_include_dir = $(get_ml_incdir)/glib-2.0:" \
-		-e "s:\$(HOME)/irssi-0\.8\.9:${S_IRSSI}:" \
+		-e "s:\$(HOME)/irssi-0\.8\.9:/usr/include/irssi:" \
 		-e "s:\$(HOME)/glib-1\.2\.10:/usr/$(get_libdir)/glib-2.0/include:" \
 		-e "s:miracl\.a:/usr/$(get_libdir)/miracl.a:" \
 		-e "s:-I\$(glib_dir) -I\$(glib_dir)/include -I\$(glib_dir)/glib:-I\$(glib_dir) -I\$(glib_include_dir) -I\$(glib_include_dir)/glib:" \
@@ -60,9 +54,6 @@ src_unpack() {
 }
 
 src_compile() {
-	cd ${S_IRSSI}
-	econf || die "Irssi configure failed"
-
 	cd ${S}
 	emake || die "emake failed"
 }
